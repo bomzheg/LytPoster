@@ -1,0 +1,19 @@
+version: '3.2'
+
+services:
+
+    nginx:
+      build: ./nginx
+      restart: always
+      depends_on:
+        - lyt_poster
+      ports:
+       - "80:80"
+
+    lyt_poster:
+      restart: always
+      build: .
+      volumes:
+        - type: "mount"
+          source: "/lyt_poster/log"
+          target: "/home/bomzheg/log/lyt_poster/"

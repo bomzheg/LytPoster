@@ -1,0 +1,8 @@
+.idea/
+.github/
+.*ignore
+README.md
+*.pyс
+__pycache__
+docker-compose*.yml
+Dockerfile
