@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 VOLUME log
 EXPOSE 8000
 COPY . .
-CMD [ "python","-m", "app" ]
+CMD [ "python", "app" ]
