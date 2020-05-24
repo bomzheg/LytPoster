@@ -13,3 +13,4 @@ services:
     bot_poster:
       restart: always
       build: .
+      env_file: .env
