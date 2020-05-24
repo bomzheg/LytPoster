@@ -3,7 +3,6 @@
 .*ignore
 README.md
 *.pyс
-.env
 __pycache__
 docker-compose*.yml
 Dockerfile

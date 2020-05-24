@@ -1,34 +1,19 @@
-
 from aiogram import Bot, types
 from aiohttp import web
 from loguru import logger
-import json
-import config
-import log
+from app import log, config
+from app.posting import post_data
 
 bot = Bot(config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 log.setup()
 
 
 async def hello_get(request: web.Request):
-    return await post_data(request.query)
+    return await post_data(bot, request.query)
 
 
 async def hello_post(request: web.Request):
-    return await post_data(await request.post())
-
-
-async def post_data(data):
-    await bot.send_message(config.LOG_CHAT_ID, f"Получен запрос. параметры {json.dumps(data.items())}")
-    try:
-        text = data['text']
-        photo_url = data['photo_url']
-    except KeyError:
-        return web.Response(text="Sorry you don't send params text and photo_url", status=400)
-    else:
-        await bot.send_photo(config.TARGET_CHAT_ID, photo=photo_url, caption=text)
-
-    return web.Response(text='ok. request received')
+    return await post_data(bot, await request.post())
 
 
 async def on_startup(_: web.Application):

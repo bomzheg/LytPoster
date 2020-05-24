@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 app_dir: Path = Path(__file__).parent
 
-load_dotenv(str(app_dir / '.env'))
+load_dotenv(str(app_dir.parent / '.env'))
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 

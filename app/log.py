@@ -2,7 +2,7 @@ import sys
 
 from loguru import logger
 
-import config
+from app import config
 
 
 def setup():
