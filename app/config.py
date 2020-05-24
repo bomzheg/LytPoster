@@ -9,7 +9,7 @@ load_dotenv(str(app_dir.parent / '.env'))
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-CAPTURE_STD_ERR = False
+CAPTURE_STD_ERR = True
 ERR_LOG = "err.log"
 PRINT_LOG = "print.log"
 

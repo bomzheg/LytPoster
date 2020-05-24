@@ -16,5 +16,5 @@ services:
       env_file: .env
       volumes:
         - type: bind
-          source: "/home/${USER}/lyt_logs/"
+          source: "/home/${USER_DIR}/lyt_logs/"
           target: "/app/log/"
