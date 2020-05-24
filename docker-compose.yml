@@ -12,4 +12,4 @@ services:
 
     bot_poster:
       restart: always
-      build: ./app
+      build: .
