@@ -16,5 +16,5 @@ services:
       env_file: .env
       volumes:
         - type: bind
-            source: ./logs/
+            source: /home/bomzheg/lyt_logs/
             target: /app/log/
