@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r lyt_poster/requirements.txt
 VOLUME /lyt_poster/log
 EXPOSE 8000
 COPY . /lyt_poster
-CMD [ "python", "lyt_poster/app" ]
+CMD [ "python","-m", "lyt_poster/app" ]
