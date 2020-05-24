@@ -14,3 +14,7 @@ services:
       restart: always
       build: .
       env_file: .env
+      volumes:
+        - type: bind
+            source: ./logs/
+            target: /app/log/
