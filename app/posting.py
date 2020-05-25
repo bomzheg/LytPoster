@@ -94,9 +94,9 @@ def get_msg_error(e: Exception, text: str = "") -> str:
 
 async def log_info(bot: Bot, log_msg: str):
     logger.info(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, log_msg)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))
 
 
 async def log_error(bot: Bot, log_msg: str):
     logger.error(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, log_msg)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))
