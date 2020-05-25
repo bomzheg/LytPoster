@@ -1,10 +1,10 @@
-from pathlib import Path
 import textwrap
 from asyncio import sleep
-from aiogram import Bot
+from pathlib import Path
+
+from aiogram import Bot, types
 from aiogram.utils.markdown import hbold, hpre
 from loguru import logger
-
 
 MAX_MESSAGE_SYMBOLS = 4000  # 4096
 MAX_CAPTION_SYMBOLS = 1024
@@ -41,7 +41,7 @@ async def send_list_messages(bot: Bot, list_msg, chat_id):
             chat_id,
             msg,
             disable_notification=True,
-            parse_mode="HTML"
+            parse_mode=types.ParseMode.HTML
         )
         await sleep(PAUSE_SEC)
 
