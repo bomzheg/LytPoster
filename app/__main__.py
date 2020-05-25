@@ -1,10 +1,10 @@
-from aiogram import Bot, types
+from aiogram import Bot
 from aiohttp import web
 from loguru import logger
 from app import log, config
 from app.posting import post_data
 
-bot = Bot(config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
+bot = Bot(config.BOT_TOKEN)
 log.setup()
 
 
