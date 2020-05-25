@@ -36,9 +36,12 @@ async def post_data(bot: Bot, data: MultiDictProxy) -> web.Response:
 
 
 async def send_content(bot: Bot, **kwargs) -> web.Response:
+    def can_text_be_caption(text):
+        return text is None or len(text) < CAPTION_MAX_SIZE
     try:
         kb = get_inline_kb(kwargs['button_text'], kwargs['button_url'])
-        if kwargs['photo_url'] is not None and kwargs['text'] is None or len(kwargs['text']) < CAPTION_MAX_SIZE:
+        if kwargs['photo_url'] is not None and can_text_be_caption(kwargs['text']):
+            logger.debug(kwargs['photo_url'])
             await bot.send_photo(
                 config.TARGET_CHAT_ID,
                 photo=kwargs['photo_url'],
@@ -91,9 +94,9 @@ def get_msg_error(e: Exception, text: str = "") -> str:
 
 async def log_info(bot: Bot, log_msg: str):
     logger.info(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, log_msg)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))
 
 
 async def log_error(bot: Bot, log_msg: str):
     logger.error(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, log_msg)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))
