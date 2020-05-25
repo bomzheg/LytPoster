@@ -8,11 +8,11 @@ bot = Bot(config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 log.setup()
 
 
-async def hello_get(request: web.Request):
+async def hello_get(request: web.Request) -> web.Response:
     return await post_data(bot, request.query)
 
 
-async def hello_post(request: web.Request):
+async def hello_post(request: web.Request) -> web.Response:
     return await post_data(bot, await request.post())
 
 
@@ -26,7 +26,7 @@ async def on_shutdown(_: web.Application):
     await bot.close()
 
 
-def init():
+def init() -> web.Application:
     app = web.Application()
     app.add_routes(
         [
