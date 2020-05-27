@@ -14,7 +14,7 @@ CAPTION_MAX_SIZE = 1024
 TEXT_MAX_SIZE = 4096
 
 
-async def process_request_posting(bot: Bot, data: MultiDictProxy) -> web.Response:
+async def post_data(bot: Bot, data: MultiDictProxy) -> web.Response:
     await log_info(bot, f"Получен запрос. параметры {quote_html(str(data.items()))}")
 
     text: typing.Optional[str] = data.get('text', None)
@@ -25,7 +25,7 @@ async def process_request_posting(bot: Bot, data: MultiDictProxy) -> web.Respons
     elif text is not None and len(text) > TEXT_MAX_SIZE:
         return web.Response(text="Sorry your text len to long (more than 4095)", status=400)
 
-    return await try_send_content(
+    return await send_content(
         bot,
         text=text,
         photo_url=photo_url,
@@ -35,9 +35,37 @@ async def process_request_posting(bot: Bot, data: MultiDictProxy) -> web.Respons
     )
 
 
-async def try_send_content(bot: Bot, **kwargs) -> web.Response:
+async def send_content(bot: Bot, **kwargs) -> web.Response:
+    def can_text_be_caption(text):
+        return text is None or len(text) < CAPTION_MAX_SIZE
     try:
-        return await send_content(bot, **kwargs)
+        kb = get_inline_kb(kwargs['button_text'], kwargs['button_url'])
+        if kwargs['photo_url'] is not None and can_text_be_caption(kwargs['text']):
+            logger.debug(kwargs['photo_url'])
+            await bot.send_photo(
+                config.TARGET_CHAT_ID,
+                photo=kwargs['photo_url'],
+                caption=kwargs['text'],
+                parse_mode=kwargs['parse_mode'],
+                reply_markup=kb
+            )
+        elif kwargs['text'] is not None and kwargs['photo_url'] is not None:
+            await bot.send_message(
+                config.TARGET_CHAT_ID,
+                text=kwargs['text'] + hide_link(kwargs['photo_url']),
+                parse_mode=types.ParseMode.HTML,
+                reply_markup=kb
+            )
+        elif kwargs['text'] is not None:
+            await bot.send_message(
+                config.TARGET_CHAT_ID,
+                kwargs['text'],
+                kwargs['parse_mode'],
+                reply_markup=kb
+            )
+        else:
+            return web.Response(text="Unexpected error", status=500)
+
     except BadRequest as e:
         log_msg = get_msg_error(e, e.text)
         await log_error(bot, log_msg)
@@ -46,42 +74,8 @@ async def try_send_content(bot: Bot, **kwargs) -> web.Response:
         log_msg = get_msg_error(e)
         await log_error(bot, log_msg)
         return web.Response(text=log_msg, status=400)
-    except Exception as e:
-        log_msg = get_msg_error(e)
-        await log_error(bot, log_msg)
-        return web.Response(text=log_msg, status=500)
-
-
-async def send_content(bot: Bot, **kwargs) -> web.Response:
-    def can_text_be_caption(text):
-        return text is None or len(text) < CAPTION_MAX_SIZE
-    kb = get_inline_kb(kwargs['button_text'], kwargs['button_url'])
-    if kwargs['photo_url'] is not None and can_text_be_caption(kwargs['text']):
-        logger.debug(kwargs['photo_url'])
-        await bot.send_photo(
-            config.TARGET_CHAT_ID,
-            photo=kwargs['photo_url'],
-            caption=kwargs['text'],
-            parse_mode=kwargs['parse_mode'],
-            reply_markup=kb
-        )
-    elif kwargs['text'] is not None and kwargs['photo_url'] is not None:
-        await bot.send_message(
-            config.TARGET_CHAT_ID,
-            text=kwargs['text'] + hide_link(kwargs['photo_url']),
-            parse_mode=types.ParseMode.HTML,
-            reply_markup=kb
-        )
-    elif kwargs['text'] is not None:
-        await bot.send_message(
-            config.TARGET_CHAT_ID,
-            text=kwargs['text'],
-            parse_mode=kwargs['parse_mode'],
-            reply_markup=kb
-        )
     else:
-        return web.Response(text="Unexpected error", status=500)
-    return web.Response(text='ok')
+        return web.Response(text='ok')
 
 
 def get_inline_kb(button_text: str, button_url: str) -> typing.Optional[InlineKeyboardMarkup]:
@@ -100,9 +94,9 @@ def get_msg_error(e: Exception, text: str = "") -> str:
 
 async def log_info(bot: Bot, log_msg: str):
     logger.info(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg), parse_mode=types.ParseMode.HTML)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))
 
 
 async def log_error(bot: Bot, log_msg: str):
     logger.error(log_msg)
-    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg), parse_mode=types.ParseMode.HTML)
+    await bot.send_message(config.LOG_CHAT_ID, quote_html(log_msg))

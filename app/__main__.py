@@ -2,18 +2,18 @@ from aiogram import Bot
 from aiohttp import web
 from loguru import logger
 from app import log, config
-from app.posting import process_request_posting
+from app.posting import post_data
 
 bot = Bot(config.BOT_TOKEN)
 log.setup()
 
 
 async def hello_get(request: web.Request) -> web.Response:
-    return await process_request_posting(bot, request.query)
+    return await post_data(bot, request.query)
 
 
 async def hello_post(request: web.Request) -> web.Response:
-    return await process_request_posting(bot, await request.post())
+    return await post_data(bot, await request.post())
 
 
 async def on_startup(_: web.Application):
